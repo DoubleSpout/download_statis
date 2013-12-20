@@ -19,9 +19,10 @@ if reqtable.device == "ios" then
 elseif reqtable.device == "android" then
 	jumpurl = item.androidurl
 end
+local err,ok = mysql:inset_statis()
 ngx.redirect(jumpurl)
 
-local err,ok = mysql:inset_statis()
+
 
 
 
