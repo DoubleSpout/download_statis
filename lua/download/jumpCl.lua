@@ -21,9 +21,3 @@ elseif reqtable.device == "android" then
 end
 local err,ok = mysql:inset_statis()
 ngx.redirect(jumpurl)
-
-
-
-
-
-

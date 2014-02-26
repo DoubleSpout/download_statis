@@ -15,11 +15,11 @@ local ERR_BUILD_CACHE = 'build cache error'
 Mysql_CLass = class('Mysql_CLass')
 
 function Mysql_CLass:initialize(reqTable)
-    self.host = "192.168.20.10"
+    self.host = "10.10.3.49"
     self.port = 3306
     self.database = "statis_download"
-    self.user = "trmotpuser"
-    self.password = "javjav"
+    self.user = ""
+    self.password = ""
     self.max_packet_size =  1024 * 1024
 
     self.max_idle_timeout = 1000*60
@@ -100,20 +100,20 @@ function Mysql_CLass:query_item()
 	 end
 	
 	 local down_table = ngx.shared.down_cache:get(tostring(key))
-	 --ngx.say(down_table)
+
 	 if not down_table then
 		return 404,ERR_NOT_FOUND_ITEM
 	 end
-
+	
 	 local ok,err = pcall(function() 
 	       down_table = cjson.decode(down_table)
 	      end)
-
+	
 	 if not ok then
 	       ngx.log(ngx.ERR, "json decode"..key.."error: "..err)
 	 end
 
-	 self.reqTable.id = down_table["id"]
+	 self.reqTable.id = down_table["Id"]
 	
 	 return nil,down_table
 	  
@@ -181,10 +181,11 @@ function Mysql_CLass:rebuild_cache() --重新创建缓存
 	 ngx.shared.down_cache:set("is_cache", "0")  --将缓存重建标识设置为0
 	 
 	 for i,v in ipairs(res) do
-	      
+
 	      local ok,err = pcall(function() 
+
 		    ngx.shared.down_cache:set(v["name"], cjson.encode(v)) --分别写入name和id缓存，方便快速查找
-		    ngx.shared.down_cache:set(tostring(v["id"]), cjson.encode(v))
+		    ngx.shared.down_cache:set(tostring(v["Id"]), cjson.encode(v))
 	      end)
 	      if not ok then
 		  ngx.log(ngx.ERR, "json encode"..v["name"].."error: "..err)
